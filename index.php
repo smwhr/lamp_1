@@ -1,6 +1,11 @@
 <?php
   session_start();
 
+  if(!isset($_SESSION['user'])){
+    header("Location: /login.php");
+    exit;
+  }
+
   if(isset($_POST['reset_best'])){
     unset($_SESSION['best_score']);
   }
@@ -59,6 +64,11 @@
     <input type="submit" name="reset_best" value="reset best">
   </form>
   <em>(La réponse est <?php echo $choice?>)</em>
+
+
+  <form method="POST" action="/login.php">
+    <input type="submit" name="logout" value="Logout">
+  </form>
   
 </body>
 </html>
