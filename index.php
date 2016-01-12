@@ -51,7 +51,7 @@
 
   <?php echo $response;?> <br>
   Nombre de coup : <?php echo $_SESSION['score']; ?><br>
-  <em>[Meilleur score : 
+  <em>[Meilleur score pour <?php echo $_SESSION['user'];?>: 
   <?php 
     echo !isset($_SESSION['best_score']) 
           ? "Pas de meilleur score" 
