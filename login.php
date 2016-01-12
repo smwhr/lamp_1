@@ -26,8 +26,14 @@ if(isset($_POST['username'])){
 
   if($result === false){
     $errormessage = "Wrong username";
+  }elseif (empty($_POST["password"])) {
+    $errormessage = "No password";
+  }elseif ($_POST["password"] != $result["password"]) {
+    $errormessage = "Wrong password";
   }else{
     $_SESSION['user'] = $result["login"];
+    $_SESSION['best_score'] = $result['best_score'];
+
     header("Location: /");
     exit;
   }
@@ -44,6 +50,7 @@ if(isset($_POST['username'])){
   Merci de vous connecter :
   <form method="POST">
   Login : <input type="text" name="username"><br>
+  Password : <input type="text" name="password"><br>
   <input type="submit" value="Log in">
   </form>
   <?php echo $errormessage;?>
