@@ -1,4 +1,6 @@
 <?php
+  require_once("model/connexion.php");
+  global $pdo;
   session_start();
 
   if(!isset($_SESSION['user'])){
@@ -7,6 +9,12 @@
   }
 
   if(isset($_POST['reset_best'])){
+    $stmt = $pdo->prepare("UPDATE `users` 
+                           SET `best_score` = NULL 
+                           WHERE `login` = :user_login ;"
+                  );
+    $stmt->bindParam("user_login",$_SESSION['user']);
+    $stmt->execute();
     unset($_SESSION['best_score']);
   }
 
@@ -35,6 +43,18 @@
       if( !isset($_SESSION['best_score'])
           || $_SESSION['best_score'] > $_SESSION['score']){
           $_SESSION['best_score'] = $_SESSION['score'];
+
+
+          
+          $stmt = $pdo->prepare("UPDATE `users` 
+                                 SET `best_score` = :best_score 
+                                 WHERE `login` = :user_login ;"
+                        );
+          $stmt->bindParam("best_score",$_SESSION['best_score']);
+          $stmt->bindParam("user_login",$_SESSION['user']);
+          $stmt->execute();
+
+
       }
       unset($_SESSION['choice']);
     }

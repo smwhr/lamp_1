@@ -1,5 +1,5 @@
 <?php 
-require_once("config/dbconf.php");
+require_once("model/connexion.php");
 session_start();
 
 if(isset($_POST['logout'])){
@@ -13,10 +13,7 @@ if(isset($_SESSION['user'])){
 
 $errormessage = null;
 if(isset($_POST['username'])){
-
-  global $config;
-  $pdo = new PDO($config['host'], $config['user'], $config['password']);
-
+  global $pdo;
   $stmt = $pdo->prepare("SELECT * FROM users 
                           WHERE login = :login"
                         );
@@ -28,7 +25,7 @@ if(isset($_POST['username'])){
     $errormessage = "Wrong username";
   }elseif (empty($_POST["password"])) {
     $errormessage = "No password";
-  }elseif ($_POST["password"] != $result["password"]) {
+  }elseif (sha1($_POST["password"]) != $result["password"]) {
     $errormessage = "Wrong password";
   }else{
     $_SESSION['user'] = $result["login"];
