@@ -1,5 +1,6 @@
 <?php
   require_once("model/connexion.php");
+  require_once("model/GameState.php");
   global $pdo;
   session_start();
 
@@ -18,12 +19,16 @@
     unset($_SESSION['best_score']);
   }
 
+  if(empty($_SESSION['game_state'])){
+    $_SESSION['game_state'] = new GameState();
+  }
+
   if(empty($_SESSION['choice']) || isset($_POST['reset'])){
     $choice  =  rand(0,100);
-    $_SESSION['score'] = 0;
-    $_SESSION['choice'] = $choice;
+    $_SESSION['game_state']->score = 0;
+    $_SESSION['game_state']->choice = $choice;;
   }else{
-    $choice = $_SESSION['choice'];
+    $choice = $_SESSION['game_state']->choice;
   }
 
   
@@ -33,7 +38,9 @@
     $response = "Pas de nombre";
   }else{
     $guess = $_POST['guess'];
-    $_SESSION['score']++;
+    $_SESSION['game_state']->score++;
+    $_SESSION['game_state']->last_guess = $guess;
+
     if($guess > $choice) {
       $response = "C'est moins";
     }elseif($guess < $choice){
@@ -56,7 +63,7 @@
 
 
       }
-      unset($_SESSION['choice']);
+      unset($_SESSION['game_state']->choice);
     }
   }
 
@@ -66,6 +73,7 @@
           ";
   $best_scores =  $pdo->query($sql);
 
+  //var_dump($_SESSION['game_state']);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,7 +84,7 @@
 <body>
   <h1>Jeu</h1>
   <?php echo $response;?> <br>
-  Nombre de coup : <?php echo $_SESSION['score']; ?><br>
+  Nombre de coup : <?php echo $_SESSION['game_state']->score; ?><br>
   <em>[Meilleur score pour <?php echo $_SESSION['user'];?>: 
   <?php 
     echo !isset($_SESSION['best_score']) 

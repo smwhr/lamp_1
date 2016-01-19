@@ -29,6 +29,7 @@ if(isset($_POST['username'])){
     $errormessage = "Wrong password";
   }else{
     $_SESSION['user'] = $result["login"];
+
     $_SESSION['best_score'] = $result['best_score'];
 
     header("Location: /");
