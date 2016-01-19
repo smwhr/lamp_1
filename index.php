@@ -56,8 +56,8 @@
     }else{
       $response = "C'est gagné";
       if( !isset($_SESSION['best_score'])
-          || $_SESSION['best_score'] > $_SESSION['score']){
-          $_SESSION['best_score'] = $_SESSION['score'];
+          || $_SESSION['best_score'] > $_SESSION['game_state']->score){
+          $_SESSION['best_score'] = $_SESSION['game_state']->score;
 
           $_SESSION['game_state']->last_guess = null;
           
