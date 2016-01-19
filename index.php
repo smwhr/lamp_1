@@ -23,7 +23,7 @@
     $_SESSION['game_state'] = new GameState();
   }
 
-  if(empty($_SESSION['choice']) || isset($_POST['reset'])){
+  if(empty($_SESSION['game_state']->choice) || isset($_POST['reset'])){
     $choice  =  rand(0,100);
     $_SESSION['game_state']->score = 0;
     $_SESSION['game_state']->choice = $choice;;
@@ -36,6 +36,14 @@
   if( !isset($_POST['guess'])
     || empty($_POST['guess'])){
     $response = "Pas de nombre";
+    if(!is_null($_SESSION['game_state']->last_guess)){
+      $guess = $_SESSION['game_state']->last_guess;
+      if($guess > $choice) {
+        $response = "C'est moins";
+      }elseif($guess < $choice){
+        $response = "C'est plus";
+      }
+    }
   }else{
     $guess = $_POST['guess'];
     $_SESSION['game_state']->score++;
@@ -51,7 +59,7 @@
           || $_SESSION['best_score'] > $_SESSION['score']){
           $_SESSION['best_score'] = $_SESSION['score'];
 
-
+          $_SESSION['game_state']->last_guess = null;
           
           $stmt = $pdo->prepare("UPDATE `users` 
                                  SET `best_score` = :best_score 
@@ -73,7 +81,16 @@
           ";
   $best_scores =  $pdo->query($sql);
 
-  //var_dump($_SESSION['game_state']);
+  $stmt = $pdo->prepare("UPDATE `users` 
+                         SET `current_game` = :current_game 
+                         WHERE `login` = :user_login ;"
+                );
+
+  $serialized = serialize($_SESSION['game_state']);
+  $stmt->bindParam("current_game",$serialized);
+  $stmt->bindParam("user_login",$_SESSION['user']);
+  $stmt->execute();
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,6 +100,9 @@
 </head>
 <body>
   <h1>Jeu</h1>
+  <?php if(!is_null($_SESSION['game_state']->last_guess)):?>
+  Votre dernier coup <?php echo $_SESSION['game_state']->last_guess;?><br>
+<?php endif;?>
   <?php echo $response;?> <br>
   Nombre de coup : <?php echo $_SESSION['game_state']->score; ?><br>
   <em>[Meilleur score pour <?php echo $_SESSION['user'];?>: 

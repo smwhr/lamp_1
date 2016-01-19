@@ -1,5 +1,6 @@
 <?php 
 require_once("model/connexion.php");
+require_once("model/GameState.php");
 session_start();
 
 if(isset($_POST['logout'])){
@@ -29,9 +30,8 @@ if(isset($_POST['username'])){
     $errormessage = "Wrong password";
   }else{
     $_SESSION['user'] = $result["login"];
-
     $_SESSION['best_score'] = $result['best_score'];
-
+    $_SESSION['game_state'] = unserialize($result['current_game']);
     header("Location: /");
     exit;
   }
