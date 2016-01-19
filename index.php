@@ -60,6 +60,12 @@
     }
   }
 
+  $sql = "SELECT login, best_score FROM users 
+          WHERE best_score IS NOT NULL
+          ORDER BY best_score ASC
+          ";
+  $best_scores =  $pdo->query($sql);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -68,7 +74,7 @@
   <title>Des papiers dans un bol </title>
 </head>
 <body>
-
+  <h1>Jeu</h1>
   <?php echo $response;?> <br>
   Nombre de coup : <?php echo $_SESSION['score']; ?><br>
   <em>[Meilleur score pour <?php echo $_SESSION['user'];?>: 
@@ -85,6 +91,19 @@
   </form>
   <em>(La réponse est <?php echo $choice?>)</em>
 
+  <h1>Leaderboard</h1>
+  <table style="border: 1px solid black">
+    <?php foreach($best_scores as $user_score):?>
+      <tr>
+        <td style="border: 1px solid black">
+          <?php echo $user_score["login"];?>
+        </td>
+        <td style="border: 1px solid black">
+          <?php echo $user_score["best_score"];?>
+        </td>
+      </tr>
+    <?php endforeach;?>
+  </table>
 
   <form method="POST" action="/login.php">
     <input type="submit" name="logout" value="Logout">
